@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LISTRA — Lingkung Seni Tradisional</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:    #1c1e0a;
+    --bg-2:  #252b0e;
+    --bg-3:  #2e3612;
+    --olive:   #9ea93f;
+    --olive-d: #60712f;
+    --olive-l: #f4f08d;
+    --brown:   #483c25;
+    --white: #f5f0e0;
+    --gray:  #9a9480;
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'Plus Jakarta Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: var(--font-body); overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 3px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 72px;
+    background: rgba(14,12,8,0.88); backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(158,169,63,0.18);
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--olive); letter-spacing: 3px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .nav-logo img { height: 36px; width: 36px; object-fit: contain; border-radius: 4px; }
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: var(--gray); text-decoration: none; text-transform: uppercase; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--olive-l); }
+
+  /* HERO BG */
+  .hero-bg {
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(158,169,63,0.22) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 85% 85%, rgba(96,113,47,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 60%, rgba(72,60,37,0.2) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  /* SECTIONS */
+  section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
+
+  /* HERO */
+  #hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 72px; position: relative; max-width: 100%; }
+  .hero-logo-wrap { margin-bottom: 28px; }
+  .hero-logo-img { height: 96px; width: auto; max-width: 280px; object-fit: contain; filter: drop-shadow(0 0 40px rgba(158,169,63,0.4)); }
+  .hero-logo-placeholder {
+    width: 96px; height: 96px; border-radius: 16px; margin: 0 auto;
+    background: var(--bg-3); border: 2px dashed rgba(158,169,63,0.3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s; color: var(--gray); font-size: 11px; gap: 6px; letter-spacing: 1px;
+  }
+  .hero-logo-placeholder:hover { border-color: var(--olive); color: var(--olive-l); }
+  .hero-logo-placeholder svg { width: 28px; height: 28px; opacity: 0.5; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before, .hero-eyebrow::after { content: ''; display: block; width: 40px; height: 1px; background: var(--olive); }
+  .logo-mark { font-family: var(--font-display); font-weight: 800; letter-spacing: -4px; line-height: 1; background: linear-gradient(135deg, var(--olive-l) 0%, var(--olive) 50%, var(--olive-d) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 50px rgba(158,169,63,0.3)); margin-bottom: 14px; }
+  .hero-sub { font-size: clamp(11px,1.8vw,15px); letter-spacing: 6px; text-transform: uppercase; color: var(--gray); font-weight: 300; margin-bottom: 28px; }
+  .hero-desc { max-width: 560px; font-size: 16px; line-height: 1.8; color: rgba(245,240,224,0.7); margin: 0 auto 44px; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--olive); color: var(--bg); font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 15px 34px; border-radius: 2px; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; }
+  .btn-primary:hover { background: var(--olive-l); transform: translateY(-2px); }
+  .scroll-hint { position: absolute; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--gray); font-size: 11px; }
+  .scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, var(--olive), transparent); animation: scrollAnim 2s ease-in-out infinite; }
+  @keyframes scrollAnim { 0%,100%{opacity:0.3;transform:scaleY(0.5)} 50%{opacity:1;transform:scaleY(1)} }
+
+  /* COMMON */
+  .section-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 16px; }
+  .section-title { font-family: var(--font-display); font-size: clamp(30px,5vw,50px); font-weight: 800; line-height: 1.1; margin-bottom: 32px; }
+  .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(158,169,63,0.2), transparent); }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .about-text { font-size: 16px; line-height: 1.9; color: rgba(245,240,224,0.75); }
+  .about-cards { display: flex; flex-direction: column; gap: 14px; }
+  .about-card { background: var(--bg-2); border: 1px solid rgba(158,169,63,0.12); border-left: 3px solid var(--olive); padding: 20px 24px; border-radius: 4px; }
+  .about-card h4 { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--olive); margin-bottom: 7px; }
+  .about-card p { font-size: 13px; line-height: 1.7; color: var(--gray); }
+
+  /* PENGURUS */
+  .division-group { margin-bottom: 52px; }
+  .division-title { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+  .division-title::after { content: ''; flex: 1; height: 1px; background: rgba(158,169,63,0.15); }
+  .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 16px; }
+  .member-card { background: var(--bg-2); border: 1px solid rgba(158,169,63,0.08); border-radius: 8px; padding: 22px 14px; text-align: center; transition: all 0.25s; }
+  .member-card:hover { border-color: rgba(158,169,63,0.35); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
+  .member-avatar { width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 14px; border: 2px solid rgba(158,169,63,0.25); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--olive-l); overflow: hidden; }
+  .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .member-name { font-family: var(--font-display); font-size: 12px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; color: var(--white); }
+  .member-role { font-size: 11px; color: var(--olive); margin-bottom: 3px; }
+  .member-angkatan { font-size: 11px; color: var(--gray); letter-spacing: 1px; }
+
+  /* PROKER */
+  .proker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; }
+  .proker-card { background: var(--bg-2); border: 1px solid rgba(158,169,63,0.08); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.25s; }
+  .proker-card:hover { border-color: rgba(158,169,63,0.35); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
+  .proker-banner { height: 150px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .proker-ticket-badge { position: absolute; top: 12px; right: 12px; background: var(--olive); color: var(--bg); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 10px; border-radius: 2px; }
+  .proker-body { padding: 22px; }
+  .proker-cat { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 6px; }
+  .proker-name { font-family: var(--font-display); font-size: 19px; font-weight: 800; margin-bottom: 9px; line-height: 1.2; }
+  .proker-desc { font-size: 13px; line-height: 1.7; color: var(--gray); margin-bottom: 14px; }
+  .proker-meta span { font-size: 11px; color: var(--gray); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(5,4,2,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .modal { background: var(--bg-2); border: 1px solid rgba(158,169,63,0.2); border-radius: 12px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-banner { height: 190px; display: flex; align-items: center; justify-content: center; border-radius: 12px 12px 0 0; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-body { padding: 28px 32px; }
+  .modal-cat { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 8px; }
+  .modal-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; margin-bottom: 14px; }
+  .modal-desc { font-size: 15px; line-height: 1.8; color: rgba(245,240,224,0.75); margin-bottom: 24px; }
+  .modal-info-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+  .modal-info-item { font-size: 13px; color: var(--gray); }
+  .modal-section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(158,169,63,0.15); }
+  .panitia-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .panitia-chip { background: var(--bg-3); border: 1px solid rgba(158,169,63,0.12); border-radius: 100px; padding: 6px 14px; font-size: 12px; }
+  .panitia-chip span { color: var(--olive); font-size: 10px; margin-left: 6px; }
+  .btn-tiket { width: 100%; padding: 17px; background: var(--olive); color: var(--bg); font-family: var(--font-display); font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+  .btn-tiket:hover { background: var(--olive-l); }
+
+  /* TIKET */
+  .tiket-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 24px 60px; }
+  .tiket-container { width: 100%; max-width: 560px; }
+  .tiket-back { display: inline-flex; align-items: center; gap: 8px; color: var(--olive); font-size: 13px; cursor: pointer; margin-bottom: 36px; background: none; border: none; font-family: var(--font-body); transition: gap 0.2s; }
+  .tiket-back:hover { gap: 12px; }
+  .tiket-event-card { background: var(--bg-3); border: 1px solid rgba(158,169,63,0.2); border-radius: 8px; padding: 18px 22px; margin-bottom: 28px; display: flex; align-items: center; gap: 16px; }
+  .tiket-event-icon { font-size: 34px; }
+  .tiket-event-info h3 { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+  .tiket-event-info p { font-size: 13px; color: var(--gray); }
+  .form-section { margin-bottom: 28px; }
+  .form-section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); font-weight: 600; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid rgba(158,169,63,0.15); }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); margin-bottom: 7px; }
+  .form-group input { width: 100%; padding: 13px 15px; background: var(--bg-3); border: 1px solid rgba(158,169,63,0.15); border-radius: 6px; color: var(--white); font-family: var(--font-body); font-size: 15px; transition: border-color 0.2s; outline: none; }
+  .form-group input:focus { border-color: var(--olive); }
+  .form-group input.error { border-color: #c05050; }
+  .tiket-types { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .tiket-type { background: var(--bg-3); border: 2px solid rgba(158,169,63,0.1); border-radius: 8px; padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
+  .tiket-type.selected { border-color: var(--olive); background: rgba(158,169,63,0.07); }
+  .tiket-type-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+  .tiket-type-price { color: var(--olive); font-weight: 700; font-size: 16px; }
+  .tiket-type-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .qty-control { display: flex; align-items: center; }
+  .qty-btn { width: 42px; height: 42px; background: var(--bg-3); border: 1px solid rgba(158,169,63,0.2); color: var(--white); font-size: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .qty-btn:first-child { border-radius: 6px 0 0 6px; } .qty-btn:last-child { border-radius: 0 6px 6px 0; }
+  .qty-btn:hover { border-color: var(--olive); color: var(--olive-l); }
+  .qty-display { width: 54px; height: 42px; background: var(--bg-2); border-top: 1px solid rgba(158,169,63,0.2); border-bottom: 1px solid rgba(158,169,63,0.2); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+  .order-summary { background: var(--bg-3); border: 1px solid rgba(158,169,63,0.2); border-radius: 8px; padding: 18px 22px; margin-bottom: 22px; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--gray); margin-bottom: 9px; }
+  .summary-row.total { color: var(--white); font-weight: 700; font-size: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(158,169,63,0.15); }
+  .summary-row.total span:last-child { color: var(--olive-l); }
+  .btn-submit { width: 100%; padding: 17px; background: var(--olive); color: var(--bg); font-family: var(--font-display); font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+  .btn-submit:hover { background: var(--olive-l); }
+
+  .success-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
+  .success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(158,169,63,0.12); border: 2px solid var(--olive); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 24px; animation: popIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+
+  footer { border-top: 1px solid rgba(158,169,63,0.12); padding: 48px; text-align: center; }
+  .footer-logo { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--olive); letter-spacing: 4px; margin-bottom: 8px; }
+  .footer-tagline { font-size: 13px; color: var(--gray); margin-bottom: 22px; }
+  .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 22px; }
+  .footer-links a { font-size: 13px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--olive-l); }
+  .footer-copy { font-size: 12px; color: rgba(154,148,128,0.5); }
+
+  /* TWEAKS */
+  .tweaks-panel { position: fixed; bottom: 24px; right: 24px; z-index: 500; background: var(--bg-2); border: 1px solid rgba(158,169,63,0.25); border-radius: 12px; padding: 20px; width: 240px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; }
+  .tweaks-title { font-family: var(--font-display); font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--olive); margin-bottom: 16px; }
+  .tweak-row { margin-bottom: 14px; }
+  .tweak-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; display: block; }
+  .tweak-row select, .tweak-row input[type=color] { width: 100%; padding: 8px 10px; background: var(--bg-3); border: 1px solid rgba(158,169,63,0.15); border-radius: 4px; color: var(--white); font-family: var(--font-body); font-size: 13px; }
+  .tweak-row input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
+
+  @media(max-width: 768px) {
+    nav { padding: 0 20px; } .nav-links { display: none; }
+    section { padding: 80px 20px; } .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .proker-grid { grid-template-columns: 1fr; } .members-grid { grid-template-columns: repeat(2,1fr); }
+    footer { padding: 40px 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState, useEffect, useRef } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#9ea93f",
+  "bgTheme": "dark",
+  "heroSize": "small"
+} /*EDITMODE-END*/;
+
+const ORG = {
+  name: "LISTRA",
+  full: "LINGKUNG SENI TRADISIONAL",
+  desc: "Lingkung Seni Tradisional Universitas Katolik Parahyangan (Listra Unpar) merupakan sebuah unit kegiatan mahasiswa yang bergerak di bidang seni dan tari tradisional. Listra menjadi media bagi mahasiswa Unpar yang memiliki ketertarikan untuk mempelajari musik dan tari tradisional.",
+  visi: "Mewujudkan wadah kemahasiswaan seni tradisional yang berlandaskan nilai Ketuhanan, berperan dalam regenerasi penggiat budaya Nusantara, penguatan identitas dan eksistensi organisasi di ruang publik, serta pengembangan kapasitas dan daya saing di tingkat nasional dan internasional.",
+  misi: [
+  "Menyelenggarakan proses pembinaan dan pelatihan seni tradisional tari dan musik secara berkelanjutan sebagai sarana kaderisasi untuk membangun kapasitas, kualitas, dan keberlanjutan regenerasi penggiat budaya Nusantara di kalangan mahasiswa.",
+  "Mengembangkan aktivitas pementasan dan partisipasi seni sebagai medium penguatan identitas, eksistensi, dan posisi organisasi di ruang publik, sekaligus sebagai wahana peningkatan pengalaman, kualitas performa, dan daya saing anggota.",
+  "Membangun dan memperkuat jejaring kolaboratif dengan komunitas seni, budayawan, institusi pendidikan, serta pemangku kepentingan terkait guna memperluas akses, meningkatkan kualitas pembinaan, dan memperkuat daya saing organisasi di tingkat nasional dan internasional.",
+  "Memanfaatkan berbagai kanal komunikasi dan ruang publik secara adaptif sebagai sarana dokumentasi, representasi, dan penguatan identitas organisasi dalam memperkenalkan seni tradisional Nusantara kepada khalayak yang lebih luas."]
+
+};
+
+const PENGURUS = [
+{
+  divisi: "Badan Pengurus Harian",
+  anggota: [
+  { nama: "Catharine Clara Nathania Leksono", jabatan: "Ketua Umum", angkatan: "2024", inisial: "CC", foto:"foto/clara.jpg" },
+  { nama: "Satrio Iswarapandya Mutiyarsa", jabatan: "Wakil Ketua", angkatan: "2024", inisial: "SI" },
+  { nama: "Khazalea Aimee Putri Nathania", jabatan: "Sekretaris 1", angkatan: "2024", inisial: "KA" },
+  { nama: "Angeline Clementine", jabatan: "Sekretaris 2", angkatan: "2024", inisial: "JA" },
+  { nama: "Myrell Carista Nararya", jabatan: "Bendahara Umum", angkatan: "2025", inisial: "MC" }]
+
+},
+{
+  divisi: "Divisi Hubungan Masyarakat",
+  anggota: [
+  { nama: "Jaquelind Shearene", jabatan: "Koordinator", angkatan: "2025", inisial: "JS" },
+  { nama: "Putri Salsabila", jabatan: "Wakil Koordinator", angkatan: "2025", inisial: "PS" },
+  { nama: "Raenissa Restining", jabatan: "Anggota", angkatan: "2025", inisial: "RR" },
+  { nama: "Moniva Balqisfathia", jabatan: "Anggota", angkatan: "2025", inisial: "MB" }]
+
+},
+{
+  divisi: "Divisi Tari",
+  anggota: [
+  { nama: "James, Cathleen", jabatan: "Koordinator", angkatan: "2024", inisial: "JC" },
+  { nama: "Gisela Clarista Citra Meidivina", jabatan: "Anggota", angkatan: "2023", inisial: "GC" },
+  { nama: "Michael Adi", jabatan: "Anggota", angkatan: "2022", inisial: "MA" }]
+
+},
+{
+  divisi: "Divisi Musik",
+  anggota: [
+  { nama: "Patricia Natasya Putri", jabatan: "Koordinator", angkatan: "2024", inisial: "PN" },
+  { nama: "Kimora Chandra Juwanda", jabatan: "Wakil Koordinator", angkatan: "2024", inisial: "KC" },
+  { nama: "Josephine Oca Calista", jabatan: "Anggota", angkatan: "2025", inisial: "JO" },
+  { nama: "Michelle Ignatia", jabatan: "Anggota", angkatan: "2025", inisial: "MI" }]
+
+},
+{
+  divisi: "Divisi Rias dan Kostum",
+  anggota: [
+  { nama: "Kirana Larastiningtyas Namira", jabatan: "Koordinator", angkatan: "2024", inisial: "AD" },
+  { nama: "Cataluna Azzahra Aurel Lukman", jabatan: "Wakil Koordinator", angkatan: "2025", inisial: "CA" },
+  { nama: "Andrea Natasha", jabatan: "Anggota", angkatan: "2025", inisial: "CM" }]
+
+},
+{
+  divisi: "Divisi Dokumentasi dan Desain",
+  anggota: [
+  { nama: "Kayla Alvaresha Andesti", jabatan: "Koordinator", angkatan: "2024", inisial: "DA" },
+  { nama: "Rhaya Ardelia", jabatan: "Wakil Koordinator", angkatan: "2025", inisial: "RA" },
+  { nama: "Melvie Arnetta Dwiriana", jabatan: "Anggota", angkatan: "2025", inisial: "FC" },
+  { nama: "Michael Christian", jabatan: "Anggota", angkatan: "2025", inisial: "GN" }]
+
+},
+{
+  divisi: "Divisi Inventaris",
+  anggota: [
+  { nama: "Jeremy Aditya Yudhiharto", jabatan: "Koordinator", angkatan: "2024", inisial: "JA" },
+  { nama: "Gabe Gracia Tampubolon", jabatan: "Wakil Koordinator", angkatan: "2025", inisial: "GG" },
+  { nama: "Joenathan Richky Banea", jabatan: "Anggota", angkatan: "2025", inisial: "JR" }]
+
+}];
+
+
+const PROKER = [
+{
+  id: 1,
+  nama: "Pengabdian Masyarakat",
+  kategori: "Pengabdian",
+  singkat: "Program pengabdian masyarakat ini mengintegrasikan pemberdayaan anak-anak panti asuhan dengan pelestarian sanggar tari lokal melalui pendidikan seni tradisional.",
+  deskripsi: "Program ini berfokus pada penyelenggaraan kelas seni rutin—mencakup pelatihan tari dan musik daerah—sebagai media pengembangan bakat, pembentukan karakter, dan terapi kreatif bagi anak-anak panti. Dengan melibatkan sanggar tari sebagai mitra strategis, program ini bertujuan menciptakan ekosistem budaya yang inklusif, berkelanjutan, dan berdampak sosial jangka panjang.",
+  tanggal: "10–12 Maret 2025", tempat: "Aula Seni Unpar",
+  emoji: "🤝", warna: "linear-gradient(135deg,#1a2e10,#2e4a1a)",
+  tiket: false,
+  panitia: [
+  { nama: "James, Cathleen", jabatan: "Ketua Pelaksana" },
+  { nama: "Gisela Clarista Citra Meidivina", jabatan: "Koordinator Teknis" },
+  { nama: "Michael Adi", jabatan: "Koordinator Konsumsi" },
+  { nama: "Raenissa Restining", jabatan: "Koordinator Publikasi" }]
+
+},
+{
+  id: 2,
+  nama: "Festival Tradisional",
+  kategori: "Perlombaan",
+  singkat: "Festival Tradisional merupakan wadah strategis bagi generasi muda, pelajar, dan komunitas seni di Jawa Barat untuk menyalurkan minat serta bakat mereka dalam seni tari.",
+  deskripsi: "Festival Tradisional LISTRA (FESTRA) 2026 merupakan program kebudayaan yang diselenggarakan oleh Unit Kegiatan Mahasiswa LISTRA Universitas Katolik Parahyangan dengan mengusung tema [menyusul] yang bermakna [menyusul]. Kegiatan ini dirancang sebagai wadah strategis bagi generasi muda, pelajar, dan komunitas seni di Jawa Barat untuk menyalurkan minat serta bakat mereka dalam seni tari, sekaligus menjadi upaya nyata pelestarian budaya bangsa di tengah arus globalisasi. Guna memperkuat semangat apresiasi budaya, program ini turut menghadirkan kolaborasi istimewa dengan berbagai tokoh publik serta maestro seni nasional yang hadir untuk mendukung kreativitas kaum muda dalam menjaga kekayaan seni Nusantara.",
+  tanggal: "14 Juni 2025", tempat: "Gedung Merdeka, Bandung",
+  emoji: "🎭", warna: "linear-gradient(135deg,#1a1a0a,#3a3a10)",
+  tiket: true,
+  jenisTiket: [
+  { id: "reg", nama: "Regular", harga: 40000, desc: "Kursi reguler, akses penuh pertunjukan" },
+  { id: "vip", nama: "VIP", harga: 85000, desc: "Kursi prioritas, snack box, poster eksklusif" }],
+
+  panitia: [
+  { nama: "Catharine Clara Nathania Leksono", jabatan: "Penanggung Jawab" },
+  { nama: "James, Cathleen", jabatan: "Direktur Artistik" },
+  { nama: "Patricia Natasya Putri", jabatan: "Direktur Musik" },
+  { nama: "Satrio Iswarapandya Mutiyarsa", jabatan: "Koordinator Acara" },
+  { nama: "Khazalea Aimee Putri Nathania", jabatan: "Sekretaris" },
+  { nama: "Myrell Carista Nararya", jabatan: "Bendahara" },
+  { nama: "Jaquelind Shearene", jabatan: "Koordinator Publikasi" },
+  { nama: "Putri Salsabila", jabatan: "Koordinator Tiket" }]
+
+},
+{
+  id: 3,
+  nama: "Orientasi Anggota Baru",
+  kategori: "Kaderisasi",
+  singkat: "Program orientasi dan pengenalan untuk anggota baru Listra mencakup sejarah, nilai, dan dasar-dasar seni tradisional.",
+  deskripsi: "Orientasi Anggota Baru adalah program wajib bagi setiap anggota baru Listra. Selama dua hari, peserta akan diperkenalkan pada sejarah dan nilai-nilai Listra, dasar-dasar tari dan musik tradisional, serta mengenal lebih dekat seluruh anggota dan pengurus.",
+  tanggal: "20–21 September 2025", tempat: "Kampus Unpar, Ciumbuleuit",
+  emoji: "🌱", warna: "linear-gradient(135deg,#0f2e1a,#1a5c2e)",
+  tiket: false,
+  panitia: [
+  { nama: "Satrio Iswarapandya Mutiyarsa", jabatan: "Ketua Pelaksana" },
+  { nama: "Jaquelind Shearene", jabatan: "Koordinator Materi" },
+  { nama: "Moniva Balqisfathia", jabatan: "Koordinator Logistik" },
+  { nama: "Raenissa Restining", jabatan: "Koordinator Dokumentasi" }]
+
+},
+{
+  id: 4,
+  nama: "Festival Budaya Nusantara",
+  kategori: "Festival & Pameran",
+  singkat: "Festival budaya tahunan bersama komunitas seni kampus se-Bandung menampilkan pertunjukan, pameran, dan bazar kuliner tradisional.",
+  deskripsi: "Festival Budaya Nusantara adalah acara kolaborasi besar antara Listra Unpar dan komunitas seni tradisional dari berbagai kampus di Bandung. Selama dua hari, pengunjung dapat menikmati pertunjukan tari dan musik tradisional, pameran kostum, workshop singkat, serta bazar makanan dan kerajinan nusantara.",
+  tanggal: "25–26 Oktober 2025", tempat: "Lapangan Unpar & Aula Utama",
+  emoji: "🎪", warna: "linear-gradient(135deg,#2e2010,#5c3c10)",
+  tiket: true,
+  jenisTiket: [
+  { id: "harian", nama: "Tiket Harian", harga: 20000, desc: "Akses 1 hari, seluruh area festival" },
+  { id: "penuh", nama: "Tiket 2 Hari", harga: 35000, desc: "Akses 2 hari + goodie bag festival" }],
+
+  panitia: [
+  { nama: "Catharine Clara Nathania Leksono", jabatan: "Ketua Pelaksana" },
+  { nama: "Kimora Chandra Juwanda", jabatan: "Koordinator Panggung" },
+  { nama: "Josephine Oca Calista", jabatan: "Koordinator Pameran" },
+  { nama: "Michelle Ignatia", jabatan: "Koordinator Bazar" },
+  { nama: "Putri Salsabila", jabatan: "Koordinator Sponsorship" },
+  { nama: "Myrell Carista Nararya", jabatan: "Bendahara" }]
+
+},
+{
+  id: 5,
+  nama: "Ngabuburit Budaya",
+  kategori: "Kegiatan Sosial",
+  singkat: "Acara ngabuburit ramadan bersama komunitas sekitar kampus dengan pertunjukan seni dan pembagian takjil gratis.",
+  deskripsi: "Ngabuburit Budaya adalah program sosial Listra yang menghadirkan kehangatan Ramadan melalui seni. Acara ini menampilkan pertunjukan tari dan musik tradisional ringan untuk komunitas sekitar kampus Unpar, diikuti dengan pembagian takjil gratis.",
+  tanggal: "14 Maret 2025", tempat: "Halaman Kampus Unpar",
+  emoji: "🌙", warna: "linear-gradient(135deg,#0a0f2e,#1a1a5e)",
+  tiket: false,
+  panitia: [
+  { nama: "Khazalea Aimee Putri Nathania", jabatan: "Ketua Pelaksana" },
+  { nama: "Jaquelind Shearene", jabatan: "Koordinator Publikasi" },
+  { nama: "Raenissa Restining", jabatan: "Koordinator Konsumsi" },
+  { nama: "Moniva Balqisfathia", jabatan: "Koordinator Logistik" }]
+
+}];
+
+
+// ── HELPERS ──────────────────────────────────────────────
+function avatarBg(ini) {
+  const c = ["#3a4a10", "#2e4a1a", "#4a3a10", "#1a3a2e", "#3a2010", "#2a1a3a"];
+  let h = 0;for (let ch of ini) h = ch.charCodeAt(0) + ((h << 5) - h);
+  return c[Math.abs(h) % c.length];
+}
+
+
+
+// ── AVATAR ───────────────────────────────────────────────
+function Avatar({ inisial, foto }) {
+  if (foto) {
+    return (
+      <div className="member-avatar">
+        <img src={foto} alt={inisial} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="member-avatar" style={{ background: avatarBg(inisial) }}>
+      {inisial}
+    </div>
+  );
+}
+
+
+
+// ── NAV ──────────────────────────────────────────────────
+function Nav({ page, onHome }) {
+  const go = (id) => {
+    if (page !== "home") {
+      onHome();
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 120);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <nav>
+      <div className="nav-logo" onClick={onHome}>
+        <img src="logo.png" alt="Logo" />
+        LISTRA
+      </div>
+
+      {page === "home" && (
+        <div className="nav-links">
+          <a onClick={() => go("tentang")}>Tentang</a>
+          <a onClick={() => go("kepengurusan")}>Pengurus</a>
+          <a onClick={() => go("proker")}>Program Kerja</a>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+// ── HERO ─────────────────────────────────────────────────
+function HeroSection({ heroSize }) {
+  const fs = heroSize === "small"
+    ? "clamp(56px,10vw,96px)"
+    : "clamp(80px,16vw,160px)";
+
+  return (
+    <section id="hero" data-screen-label="01 Hero">
+      <div className="hero-logo-wrap">
+        <img className="hero-logo-img" src="logo.png" alt="Logo LISTRA" />
+      </div>
+
+      <div className="hero-eyebrow">LISTRA UNPAR</div>
+      <div className="logo-mark" style={{ fontSize: fs }}>LISTRA</div>
+      <div className="hero-sub">{ORG.full}</div>
+      <p className="hero-desc">{ORG.desc}</p>
+
+      <a
+        className="btn-primary"
+        href="#tentang"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("tentang")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      >
+        Kenali Kami ↓
+      </a>
+
+      <div className="scroll-hint">
+        <div className="scroll-line" />
+      </div>
+    </section>
+  );
+}
+
+// ── TENTANG ──────────────────────────────────────────────
+function TentangSection() {
+  return (
+    <section id="tentang" data-screen-label="02 Tentang">
+      <div className="section-label">Tentang Kami</div>
+      <div className="about-grid">
+        <div>
+          <h2 className="section-title">Seni adalah hidup,<br />hidup adalah seni.</h2>
+          <p className="about-text" style={{ marginBottom: 16 }}>{ORG.desc}</p>
+          <p className="about-text">Sejak berdiri, Listra telah menjadi rumah bagi ratusan mahasiswa pencinta seni tradisional. Kami percaya bahwa melestarikan budaya nusantara adalah tanggung jawab bersama yang dapat dimulai dari lingkungan kampus.</p>
+        </div>
+        <div className="about-cards">
+          <div className="about-card"><h4>Visi</h4><p>{ORG.visi}</p></div>
+          {ORG.misi.map((m, i) => <div className="about-card" key={i}><h4>Misi {i + 1}</h4><p>{m}</p></div>)}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ── KEPENGURUSAN ─────────────────────────────────────────
+function KepengurusanSection() {
+  return (
+    <section id="kepengurusan" data-screen-label="03 Kepengurusan">
+      <div className="section-label">KEPENGURUSAN 2026</div>
+      <h2 className="section-title">Mereka yang menggerakkan<br />LISTRA tahun ini.</h2>
+      {PENGURUS.map((div, i) =>
+      <div className="division-group" key={i}>
+          <div className="division-title">{div.divisi}</div>
+          <div className="members-grid">
+            {div.anggota.map((m, j) =>
+          <div className="member-card" key={j}>
+                <Avatar inisial={m.inisial} foto={m.foto} />
+                <div className="member-name">{m.nama}</div>
+                <div className="member-role">{m.jabatan}</div>
+                <div className="member-angkatan">Angkatan {m.angkatan}</div>
+              </div>
+          )}
+          </div>
+        </div>
+      )}
+    </section>);
+
+}
+
+// ── PROKER ───────────────────────────────────────────────
+function ProkerSection({ onOpen }) {
+  return (
+    <section id="proker" data-screen-label="04 Program Kerja">
+      <div className="section-label">Program Kerja 2025</div>
+      <h2 className="section-title">Lima program. Satu<br />semangat yang sama.</h2>
+      <div className="proker-grid">
+        {PROKER.map((p) =>
+        <div className="proker-card" key={p.id} onClick={() => onOpen(p)}>
+            <div className="proker-banner" style={{ background: p.warna }}>
+              <span style={{ fontSize: 52 }}>{p.emoji}</span>
+              {p.tiket && <div className="proker-ticket-badge">🎟 Ada Tiket</div>}
+            </div>
+            <div className="proker-body">
+              <div className="proker-cat">{p.kategori}</div>
+              <div className="proker-name">{p.nama}</div>
+              <div className="proker-desc">{p.singkat}</div>
+              <div className="proker-meta"><span>📅 {p.tanggal}</span></div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>);
+
+}
+
+// ── MODAL ────────────────────────────────────────────────
+function ProkerModal({ proker, onClose, onBuyTicket }) {
+  useEffect(() => {
+    const h = (e) => {if (e.key === "Escape") onClose();};
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, []);
+  return (
+    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-banner" style={{ background: proker.warna }}>
+          <span style={{ fontSize: 68 }}>{proker.emoji}</span>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          <div className="modal-cat">{proker.kategori}</div>
+          <div className="modal-title">{proker.nama}</div>
+          <p className="modal-desc">{proker.deskripsi}</p>
+          <div className="modal-info-row">
+            <div className="modal-info-item">📅 {proker.tanggal}</div>
+            <div className="modal-info-item">📍 {proker.tempat}</div>
+          </div>
+          <div className="modal-section-title">Susunan Panitia</div>
+          <div className="panitia-list">
+            {proker.panitia.map((p, i) => <div className="panitia-chip" key={i}>{p.nama}<span>{p.jabatan}</span></div>)}
+          </div>
+          {proker.tiket && <button className="btn-tiket" onClick={() => onBuyTicket(proker)}>🎟 Beli Tiket Sekarang</button>}
+        </div>
+      </div>
+    </div>);
+
+}
+
+// ── TIKET PAGE ───────────────────────────────────────────
+function TiketPage({ proker, onBack }) {
+  const [nama, setNama] = useState("");
+  const [telp, setTelp] = useState("");
+  const [jenis, setJenis] = useState(proker.jenisTiket?.[0]?.id || "");
+  const [qty, setQty] = useState(1);
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [orderNum] = useState(() => "LST-" + Math.random().toString(36).slice(2, 8).toUpperCase());
+  const sel = proker.jenisTiket?.find((t) => t.id === jenis);
+  const total = (sel?.harga || 0) * qty;
+  const fmt = (n) => "Rp " + n.toLocaleString("id-ID");
+
+  const submit = () => {
+    const e = {};
+    if (!nama.trim()) e.nama = true;
+    if (!telp.trim() || !/^[0-9]{9,13}$/.test(telp.replace(/\s/g, ""))) e.telp = true;
+    setErrors(e);
+    if (!Object.keys(e).length) {
+      setSubmitted(true);
+      const msg = encodeURIComponent(
+        `🎟 *PEMESANAN TIKET LISTRA*\n\n` +
+        `Halo Kak, saya ingin memesan tiket:\n\n` +
+        `📌 *Event:* ${proker.nama}\n` +
+        `📅 *Tanggal:* ${proker.tanggal}\n` +
+        `📍 *Tempat:* ${proker.tempat}\n\n` +
+        `👤 *Nama:* ${nama}\n` +
+        `📱 *No. WA:* +62${telp}\n\n` +
+        `🎫 *Jenis Tiket:* ${sel?.nama}\n` +
+        `🔢 *Jumlah:* ${qty} tiket\n` +
+        `💰 *Total:* ${fmt(total)}\n\n` +
+        `📋 *Nomor Order:* ${orderNum}\n\n` +
+        `Mohon konfirmasi pembayarannya. Terima kasih! 🙏`
+      );
+      setTimeout(() => window.open(`https://wa.me/6285700449652?text=${msg}`, "_blank"), 500);
+    }
+  };
+
+  if (submitted) return (
+    <div className="success-page" data-screen-label="06 Sukses Tiket">
+      <div>
+        <div className="success-icon">✓</div>
+        <div className="section-label" style={{ textAlign: "center", marginBottom: 8 }}>Pesanan Berhasil</div>
+        <h2 className="section-title" style={{ textAlign: "center", fontSize: 28, marginBottom: 16 }}>Terima kasih, {nama.split(" ")[0]}!</h2>
+        <p style={{ color: "var(--gray)", fontSize: 14, lineHeight: 1.8, textAlign: "center", marginBottom: 24 }}>
+          Pesanan tiket <strong style={{ color: "var(--white)" }}>{proker.nama}</strong> sudah kami terima.<br />
+          Nomor order: <strong style={{ color: "var(--olive-l)" }}>{orderNum}</strong><br />
+          WhatsApp LISTRA telah terbuka untuk konfirmasi pembayaran.
+        </p>
+        <button className="btn-primary" style={{ margin: "0 auto", display: "flex" }} onClick={onBack}>← Kembali ke Beranda</button>
+      </div>
+    </div>);
+
+
+  return (
+    <div className="tiket-page" data-screen-label="05 Beli Tiket">
+      <div className="tiket-container">
+        <button className="tiket-back" onClick={onBack}>← Kembali</button>
+        <div className="tiket-event-card">
+          <div className="tiket-event-icon">{proker.emoji}</div>
+          <div className="tiket-event-info"><h3>{proker.nama}</h3><p>📅 {proker.tanggal} · 📍 {proker.tempat}</p></div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">Data Diri</div>
+          <div className="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" placeholder="Masukkan nama lengkap" value={nama} onChange={(e) => setNama(e.target.value)} className={errors.nama ? "error" : ""} />
+            {errors.nama && <p style={{ color: "#c05050", fontSize: 12, marginTop: 4 }}>Nama wajib diisi</p>}
+          </div>
+          <div className="form-group">
+            <label>Nomor WhatsApp</label>
+            <div style={{ display: "flex" }}>
+              <div style={{ padding: "13px 12px", background: "var(--bg-3)", border: "1px solid rgba(158,169,63,0.15)", borderRight: "none", borderRadius: "6px 0 0 6px", fontSize: 15, color: "var(--gray)" }}>+62</div>
+              <input type="tel" placeholder="81234567890" value={telp} onChange={(e) => setTelp(e.target.value.replace(/[^0-9]/g, ""))} className={errors.telp ? "error" : ""} style={{ borderRadius: "0 6px 6px 0", borderLeft: "none", flex: 1 }} />
+            </div>
+            {errors.telp && <p style={{ color: "#c05050", fontSize: 12, marginTop: 4 }}>Nomor WA tidak valid</p>}
+          </div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">Pilih Tiket</div>
+          <div className="tiket-types">
+            {proker.jenisTiket?.map((t) =>
+            <div className={"tiket-type" + (jenis === t.id ? " selected" : "")} key={t.id} onClick={() => setJenis(t.id)}>
+                <div><div className="tiket-type-name">{t.nama}</div><div className="tiket-type-desc">{t.desc}</div></div>
+                <div className="tiket-type-price">{fmt(t.harga)}</div>
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+            <span style={{ fontSize: 13, color: "var(--gray)" }}>Jumlah tiket</span>
+            <div className="qty-control">
+              <button className="qty-btn" onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
+              <div className="qty-display">{qty}</div>
+              <button className="qty-btn" onClick={() => setQty((q) => Math.min(10, q + 1))}>+</button>
+            </div>
+          </div>
+        </div>
+        <div className="order-summary">
+          <div className="summary-row"><span>Jenis Tiket</span><span>{sel?.nama}</span></div>
+          <div className="summary-row"><span>Harga Satuan</span><span>{fmt(sel?.harga || 0)}</span></div>
+          <div className="summary-row"><span>Jumlah</span><span>{qty} tiket</span></div>
+          <div className="summary-row total"><span>Total Pembayaran</span><span>{fmt(total)}</span></div>
+        </div>
+        <button className="btn-submit" onClick={submit}>Pesan Tiket — {fmt(total)}</button>
+        <p style={{ textAlign: "center", fontSize: 12, color: "var(--gray)", marginTop: 12 }}>Konfirmasi dikirim via WhatsApp ke panitia LISTRA</p>
+      </div>
+    </div>);
+
+}
+
+// ── TWEAKS ───────────────────────────────────────────────
+function TweaksPanel({ tweaks, setTweaks, show }) {
+  if (!show) return null;
+  const update = (k, v) => {
+    const next = { ...tweaks, [k]: v };
+    setTweaks(next);
+    window.parent?.postMessage({ type: "__edit_mode_set_keys", edits: next }, "*");
+  };
+  return (
+    <div className="tweaks-panel">
+      <div className="tweaks-title">Tweaks</div>
+      <div className="tweak-row">
+        <span className="tweak-label">Warna Aksen</span>
+        <input type="color" value={tweaks.accentColor} onChange={(e) => {
+          update("accentColor", e.target.value);
+          document.documentElement.style.setProperty("--olive", e.target.value);
+        }} />
+      </div>
+      <div className="tweak-row">
+        <span className="tweak-label">Ukuran Logo Hero</span>
+        <select value={tweaks.heroSize} onChange={(e) => update("heroSize", e.target.value)}>
+          <option value="large">Besar</option>
+          <option value="small">Sedang</option>
+        </select>
+      </div>
+    </div>);
+
+}
+
+// ── APP ──────────────────────────────────────────────────
+function App() {
+  const [page, setPage] = useState("home");
+  const [modal, setModal] = useState(null);
+  const [tiketProker, setTiketProker] = useState(null);
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [showTweaks, setShowTweaks] = useState(false);
+  
+
+  useEffect(() => {
+    window.addEventListener("message", (e) => {
+      if (e.data?.type === "__activate_edit_mode") setShowTweaks(true);
+      if (e.data?.type === "__deactivate_edit_mode") setShowTweaks(false);
+    });
+    window.parent?.postMessage({ type: "__edit_mode_available" }, "*");
+    document.documentElement.style.setProperty("--olive", tweaks.accentColor);
+  }, []);
+
+  const handleBuyTicket = (p) => {setModal(null);setTiketProker(p);setPage("tiket");window.scrollTo({ top: 0 });};
+  const handleHome = () => {setPage("home");setTiketProker(null);};
+
+  if (page === "tiket" && tiketProker) return (
+    <><div className="hero-bg" /><Nav page="tiket" onHome={handleHome} />
+      <TiketPage proker={tiketProker} onBack={handleHome} />
+      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} show={showTweaks} /></>);
+
+
+  return (
+    <><div className="hero-bg" /><Nav page="home" onHome={handleHome} />
+      <HeroSection heroSize={tweaks.heroSize} />
+      <div className="divider" style={{ maxWidth: 1200, margin: "0 auto" }} />
+      <TentangSection />
+      <div className="divider" style={{ maxWidth: 1200, margin: "0 auto" }} />
+      <KepengurusanSection />
+      <div className="divider" style={{ maxWidth: 1200, margin: "0 auto" }} />
+      <ProkerSection onOpen={setModal} />
+      <footer>
+        <div className="footer-logo">LISTRA</div>
+        <div className="footer-tagline">Lingkung Seni Tradisional </div>
+        <div className="footer-links">
+          <a href="#">Instagram</a><a href="#">YouTube</a><a href="#">TikTok</a><a href="#">Email</a>
+        </div>
+        <div className="footer-copy">© 2025 LISTRA Unpar. All rights reserved.</div>
+      </footer>
+      {modal && <ProkerModal proker={modal} onClose={() => setModal(null)} onBuyTicket={handleBuyTicket} />}
+      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} show={showTweaks} />
+    </>);
+
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
